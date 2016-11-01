@@ -1,0 +1,16 @@
+.tasks{
+  width: 750px;
+
+  &__loading{
+    text-align: center;
+    margin-bottom: 50px;
+  }
+
+  &_none{
+    display: none;
+  }
+
+  .task{
+    margin-bottom: 25px;
+  }
+}

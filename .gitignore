@@ -3,4 +3,6 @@
 node_modules/
 public/built
 server/.idea
-
+*.pyc
+server/server/settings.py
+server/todolist/migrations

@@ -1,3 +1,12 @@
-/**
- * Created by utrobin on 01.11.16.
- */
+const styles = {
+  margin: {
+    marginTop: 15,
+  },
+  button: {
+    marginTop: 25,
+    marginLeft: 15,
+    float: "right",
+  }
+};
+
+export default styles;
