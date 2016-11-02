@@ -2,12 +2,23 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from todolist.models import Todo, Tags
 from django.core.serializers.json import DjangoJSONEncoder
+from django.db.models import Q
 import json
 import math
 
 
+def all_tags(list):
+    if len(list) != 0:
+        return list
+    else:
+        for k in Tags.objects.all():
+            list.append(k.title)
+        return list
+
+
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
+
 
 @csrf_exempt
 def save_todo(request):
@@ -48,10 +59,33 @@ def get_tasks(request):
     if request.method == 'POST':
         req = json.loads(request.body.decode('utf-8'))
         page = req['page']
+        sort = req['sort']
+        show = req['show']
+
         data = {}
         data['tasks'] = []
-        data['page'] = math.ceil(Todo.objects.all().count() / 10)
-        for todo in Todo.objects.all().order_by('dedline_date', 'dedline_time').distinct()[page * 10:(page + 1) * 10]:
+
+        if sort == "alphabetically":
+            sort = "title"
+        elif sort == "dedline":
+            sort = "dedline_date"
+
+        if show == "complete":
+            show = [True]
+        elif show == "uncomplete":
+            show = [False]
+        else:
+            show = [True, False]
+
+        data['page'] = math.ceil(Todo.objects.filter(
+            Q(tags__title__in=all_tags(req['tags'])),
+            Q(completed__in=show)
+        ).order_by(sort).order_by('dedline_time').distinct().count() / 10)
+
+        for todo in Todo.objects.filter(
+            Q(tags__title__in=all_tags(req['tags'])),
+            Q(completed__in=show)
+        ).order_by(sort).order_by('dedline_time').distinct()[page * 10:(page + 1) * 10]:
             tags = []
             for tag in todo.tags.all():
                 tags.append(tag.title)
@@ -80,3 +114,17 @@ def edit_complete(request):
         todo.save()
 
         return HttpResponse()
+
+
+@csrf_exempt
+def get_tags(request):
+    if request.method == 'POST':
+        data = []
+        for tag in Tags.objects.all()[0:7]:
+            data.append({
+                'title': tag.title,
+                'id': tag.id,
+                'active': False
+            })
+
+        return HttpResponse(json.dumps(data, cls=DjangoJSONEncoder), content_type="application/json")

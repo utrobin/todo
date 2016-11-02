@@ -14,7 +14,7 @@ export default class Tasks extends React.Component {
     if (this.props.error) {
       return (
         <div className="tasks">
-          Не удалось загрузить задачи
+          <span className="tasks_empty">Задач не найдено</span>
         </div>
       )
     }

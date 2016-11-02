@@ -6,3 +6,4 @@ server/.idea
 *.pyc
 server/server/settings.py
 server/todolist/migrations
+npm-debug.log

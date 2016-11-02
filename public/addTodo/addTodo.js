@@ -31,6 +31,7 @@ export default class AddTodo extends React.Component {
           fullWidth={true}
           primary={true}
           buttonStyle={{height: "50px"}}
+          labelStyle={{fontSize: 24, fontWeight: 700}}
           overlayStyle={{height: "50px", lineHeight: "50px"}}
         />
         <Dialog

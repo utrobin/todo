@@ -12,14 +12,44 @@ export default class Todo extends React.Component {
     this.getTasks = this.getTasks.bind(this);
     this.loading = this.loading.bind(this);
     this.resetData = this.resetData.bind(this);
+    this.changeSort = this.changeSort.bind(this);
+    this.changeTags = this.changeTags.bind(this);
+    this.changeShow = this.changeShow.bind(this);
 
     this.state = {
       page: 0,
       error: false,
       loading: true,
       visibleButton: false,
-      data: []
+      data: [],
+      sort: 'dedline',
+      tags: [],
+      show: 'all',
     };
+  }
+
+  changeSort(sort) {
+    this.setState({
+      sort: sort,
+      data: [],
+      page: 0,
+    }, this.getTasks)
+  }
+
+  changeShow(value) {
+    this.setState({
+      show: value,
+      data: [],
+      page: 0,
+    }, this.getTasks)
+  }
+
+  changeTags(tags) {
+    this.setState({
+      tags: tags,
+      data: [],
+      page: 0,
+    }, this.getTasks)
   }
 
   resetData() {
@@ -37,10 +67,17 @@ export default class Todo extends React.Component {
   }
 
   getTasks() {
+    this.loading();
+
     let xhr = new XMLHttpRequest();
     xhr.open('POST', `/api/get/tasks`, true);
     xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.send(JSON.stringify( {page: this.state.page} ));
+    xhr.send(JSON.stringify({
+      page: this.state.page,
+      sort: this.state.sort,
+      tags: this.state.tags,
+      show: this.state.show,
+    }));
     xhr.onreadystatechange = () => {
       if (xhr.readyState != 4) return;
 
@@ -48,19 +85,27 @@ export default class Todo extends React.Component {
         this.setState({ error: true });
       } else {
         let data = JSON.parse(xhr.responseText);
+        if (data.tasks.length === 0) {
+          this.setState({
+            page: ++this.state.page,
+            visibleButton: false,
+            loading: false,
+            error: true
+          });
+        } else {
+          let visibleButton = true;
+          if (data.page - this.state.page === 1) {
+            visibleButton = false
+          }
 
-        let visibleButton = true;
-        if (data.page - this.state.page === 1) {
-          visibleButton = false
+          this.setState({
+            data: this.state.data.concat(data.tasks),
+            loading: false,
+            page: ++this.state.page,
+            visibleButton: visibleButton,
+            error: false
+          });
         }
-
-        this.setState({
-          data: this.state.data.concat(data.tasks),
-          loading: false,
-          page: ++this.state.page,
-          visibleButton: visibleButton,
-        });
-        console.log(data);
       }
     }
   }
@@ -77,10 +122,14 @@ export default class Todo extends React.Component {
           loading={this.loading}
           resetData={this.resetData}
         />
-        <BlockFilter />
+        <BlockFilter
+          loading={this.loading}
+          changeSort={this.changeSort}
+          changeTags={this.changeTags}
+          changeShow={this.changeShow}
+        />
         <Tasks
           error={this.state.error}
-          loading={this.state.loading}
           data={this.state.data}
           getTasks={this.getTasks}
           visibleButton={this.state.visibleButton}
