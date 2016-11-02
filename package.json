@@ -8,7 +8,7 @@
     "test": "node ./public/built/test.js",
     "eslint": "./node_modules/.bin/eslint public/form/*.js",
     "webpack": "./node_modules/.bin/webpack --config webpack.config.js --watch",
-    "webpack-prod": "./node_modules/.bin/webpack --config webpack.config.js --optimize-minimize"
+    "built": "NODE_ENV='production' webpack --config webpack.prod.js -p"
   },
   "engines": {
     "node": "6.3.1"
@@ -21,6 +21,7 @@
     "react-tap-event-plugin": "^1.0.0"
   },
   "devDependencies": {
+    "compression-webpack-plugin": "^0.3.2",
     "babel-core": "^6.14.0",
     "babel-loader": "^6.2.5",
     "babel-polyfill": "^6.16.0",
@@ -45,6 +46,8 @@
     "react-tap-event-plugin": "^1.0.0",
     "sass-loader": "^4.0.2",
     "style-loader": "^0.13.1",
-    "webpack": "^1.13.2"
+    "webpack": "^1.13.2",
+    "webpack-dev-server": "^1.16.1",
+    "webpack-shell-plugin": "^0.4.3"
   }
 }
