@@ -15,6 +15,7 @@ export default class Todo extends React.Component {
     this.changeSort = this.changeSort.bind(this);
     this.changeTags = this.changeTags.bind(this);
     this.changeShow = this.changeShow.bind(this);
+    this.deletedTodo = this.deletedTodo.bind(this);
 
     this.state = {
       page: 0,
@@ -64,6 +65,19 @@ export default class Todo extends React.Component {
       loading: true,
       visibleButton: false,
     });
+  }
+
+  deletedTodo(i) {
+    let index = 0;
+    this.state.data.forEach((el, ind) => {
+      if (el.id === i) {
+        index = ind;
+      }
+    });
+
+    let temp = this.state.data;
+    delete temp[index];
+    this.setState({ data: temp })
   }
 
   getTasks() {
@@ -131,8 +145,12 @@ export default class Todo extends React.Component {
         <Tasks
           error={this.state.error}
           data={this.state.data}
+          loading={this.state.loading}
+          loadingF={this.loading}
           getTasks={this.getTasks}
           visibleButton={this.state.visibleButton}
+          deletedTodo={this.deletedTodo}
+          resetData={this.resetData}
         />
       </div>
     );

@@ -1,3 +1,35 @@
 .task{
   padding: 15px;
+
+  &__dedline{
+    color: #939393;
+    float: right;
+    margin: 0 0 5px 5px;
+  }
+  &__title{
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  &__tools{
+    float: right;
+    color: #939393;
+    font-size: 14px;
+    margin-left: 5px;
+    visibility: hidden;
+  }
+  &__tools__span:hover{
+    cursor: pointer;
+    color: rgb(0, 188, 212);
+  }
+  &__descreption{
+    display: block;
+    margin-bottom: 10px;
+  }
+}
+.task:hover .task__tools{
+  visibility: visible;
+}
+.task:hover{
+  box-shadow: rgba(0, 0, 0, 0.188235) 0px 10px 30px, rgba(0, 0, 0, 0.227451) 0px 6px 10px;
 }

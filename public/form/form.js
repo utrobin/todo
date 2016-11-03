@@ -20,12 +20,40 @@ export default class Form extends React.Component {
     };
   }
 
+  componentWillMount() {
+    this.addFields();
+  }
+
+  addFields() {
+    let title = this.props.title || "";
+    let descreption = this.props.descreption || "";
+    let tags = this.props.tags || [];
+    let dedline_date = this.dedline_date ;
+    let dedline_time = this.dedline_date ;
+
+    tags = tags.map(el => {
+      return el.title;
+    });
+
+    this.setState({
+      title,
+      descreption,
+      tags,
+      dedline_date,
+      dedline_time
+    });
+  }
+
   addTask(fields) {
     this.props.resetData();
     this.props.loading();
 
+    if (this.props.id !== undefined) {
+      fields.id = this.props.id;
+    }
+
     var xhr = new XMLHttpRequest();
-    xhr.open('POST', '/api/save/todo', true);
+    xhr.open('POST', this.props.url, true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.send(JSON.stringify(fields));
     xhr.onreadystatechange = () => {
@@ -99,6 +127,7 @@ export default class Form extends React.Component {
           errorText={this.state.error}
           fullWidth={true}
           floatingLabelText="Заголовок*"
+          defaultValue={this.state.title}
         />
         <TextField
           name="description"
@@ -107,11 +136,13 @@ export default class Form extends React.Component {
           floatingLabelText="Описание"
           multiLine={true}
           rows={2}
+          defaultValue={this.state.descreption}
         />
         <TextField
           name="tags"
           fullWidth={true}
           floatingLabelText="Введите теги через запятую"
+          defaultValue={this.state.tags.join(', ')}
         />
         <DatePicker
           name="date"

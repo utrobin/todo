@@ -79,16 +79,22 @@ def get_tasks(request):
 
         data['page'] = math.ceil(Todo.objects.filter(
             Q(tags__title__in=all_tags(req['tags'])),
-            Q(completed__in=show)
+            Q(completed__in=show),
+            Q(deleted=False)
         ).order_by(sort).order_by('dedline_time').distinct().count() / 10)
 
         for todo in Todo.objects.filter(
             Q(tags__title__in=all_tags(req['tags'])),
-            Q(completed__in=show)
+            Q(completed__in=show),
+            Q(deleted=False)
         ).order_by('dedline_time').order_by(sort).distinct()[page * 10:(page + 1) * 10]:
             tags = []
             for tag in todo.tags.all():
-                tags.append(tag.title)
+                tags.append({
+                    'title': tag.title,
+                    'id': tag.id,
+                    'active': False
+                })
 
             data['tasks'].append({
                 'id': todo.id,
@@ -117,10 +123,39 @@ def edit_complete(request):
 
 
 @csrf_exempt
+def delete_todo(request):
+    if request.method == 'POST':
+        req = json.loads(request.body.decode('utf-8'))
+
+        t_id = req['id']
+        todo = Todo.objects.get(id=t_id)
+        todo.deleted = True
+        todo.save()
+
+        return HttpResponse()
+
+@csrf_exempt
+def edit_todo(request):
+    if request.method == 'POST':
+        req = json.loads(request.body.decode('utf-8'))
+
+        todo = Todo.objects.get(id=req['id'])
+        todo(
+            title=req['title'],
+            description=req['description'],
+            dedline_date=req['dedline_date'],
+            dedline_time=req['dedline_time'],
+        )
+        todo.save()
+
+        return HttpResponse()
+
+
+@csrf_exempt
 def get_tags(request):
     if request.method == 'POST':
         data = []
-        for tag in Tags.objects.all()[0:7]:
+        for tag in Tags.objects.all().distinct()[0:7]:
             data.append({
                 'title': tag.title,
                 'id': tag.id,

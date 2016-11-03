@@ -33,6 +33,10 @@ export default class Tasks extends React.Component {
                   time={el.time}
                   completed={el.completed}
                   tags={el.tags}
+                  deletedTodo={this.props.deletedTodo}
+                  getTasks={this.props.getTasks}
+                  loading={this.props.loadingF}
+                  resetData={this.props.resetData}
                 />
               )
             })

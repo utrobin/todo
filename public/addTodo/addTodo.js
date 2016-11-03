@@ -45,6 +45,7 @@ export default class AddTodo extends React.Component {
             close={this.handleClose}
             loading={this.props.loading}
             resetData={this.props.resetData}
+            url="/api/save/todo"
           />
         </Dialog>
       </div>
