@@ -85,7 +85,7 @@ def get_tasks(request):
         for todo in Todo.objects.filter(
             Q(tags__title__in=all_tags(req['tags'])),
             Q(completed__in=show)
-        ).order_by(sort).order_by('dedline_time').distinct()[page * 10:(page + 1) * 10]:
+        ).order_by('dedline_time').order_by(sort).distinct()[page * 10:(page + 1) * 10]:
             tags = []
             for tag in todo.tags.all():
                 tags.append(tag.title)
