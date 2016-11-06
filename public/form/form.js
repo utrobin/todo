@@ -12,11 +12,12 @@ export default class Form extends React.Component {
     this._onSubmit = this._onSubmit.bind(this);
     this._onFocus = this._onFocus.bind(this);
     this._onBlur = this._onBlur.bind(this);
+    this.addFields = this.addFields.bind(this);
     this._onChange = this._onChange.bind(this);
 
     this.state = {
       submit: false,
-      error: ""
+      error: "",
     };
   }
 
@@ -28,19 +29,37 @@ export default class Form extends React.Component {
     let title = this.props.title || "";
     let descreption = this.props.descreption || "";
     let tags = this.props.tags || [];
-    let dedline_date = this.dedline_date ;
-    let dedline_time = this.dedline_date ;
+    let dedline_date = this.props.dedline_date ;
+    let dedline_time = this.props.dedline_time ;
 
     tags = tags.map(el => {
       return el.title;
     });
 
+    let date = [];
+    let temp1 = new Date();
+    if (dedline_date !== undefined && dedline_date !== null) {
+      date = dedline_date.split("-");
+      temp1.setFullYear(date[0], date[1], date[2]);
+    } else {
+      temp1 = undefined;
+    }
+
+    let time = [];
+    let temp2 = new Date();
+    if (dedline_time !== undefined && dedline_time !== null) {
+      time = dedline_time.split(":");
+      temp2.setHours(time[0], time[1]);
+    } else {
+      temp2 = null;
+    }
+
     this.setState({
       title,
       descreption,
       tags,
-      dedline_date,
-      dedline_time
+      dedline_date: temp1,
+      dedline_time: temp2,
     });
   }
 
@@ -111,8 +130,8 @@ export default class Form extends React.Component {
       fields[name] = value;
     });
 
-    this.props.close();
     this.addTask(fields);
+    this.props.close("message");
   }
 
   render() {
@@ -149,6 +168,7 @@ export default class Form extends React.Component {
           style={styles.margin}
           fullWidth={true}
           hintText="Дата окончания задачи"
+          defaultDate={this.state.dedline_date}
         />
         <TimePicker
           name="time"
@@ -156,11 +176,12 @@ export default class Form extends React.Component {
           format="24hr"
           fullWidth={true}
           hintText="Время окончания задачи"
+          defaultTime={this.state.dedline_time}
         />
         <RaisedButton
           disabled={!this.state.submit}
           onTouchTap={this._onSubmit}
-          label="Добавить"
+          label={this.props.nameButton}
           primary={true}
           style={styles.button}
         />

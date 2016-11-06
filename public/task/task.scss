@@ -2,34 +2,48 @@
   padding: 15px;
 
   &__dedline{
-    color: #939393;
-    float: right;
     margin: 0 0 5px 5px;
+    color: #888888;
+    float: right;
+    font-size: 14px;
   }
   &__title{
     font-size: 18px;
     font-weight: 700;
     margin-bottom: 10px;
+    line-height: 26px;
   }
   &__tools{
     float: right;
     color: #939393;
     font-size: 14px;
     margin-left: 5px;
-    visibility: hidden;
+    display: none;
+  }
+  &__tools__span{
+    margin-bottom: 4px;
+    margin-top: 4px;
+    display: block;
   }
   &__tools__span:hover{
     cursor: pointer;
     color: rgb(0, 188, 212);
   }
+  &__tools:after{
+    clear: both;
+  }
   &__descreption{
     display: block;
     margin-bottom: 10px;
+    line-height: 18px;
   }
 }
 .task:hover .task__tools{
-  visibility: visible;
+  display: block;
 }
 .task:hover{
-  box-shadow: rgba(0, 0, 0, 0.188235) 0px 10px 30px, rgba(0, 0, 0, 0.227451) 0px 6px 10px;
+  box-shadow: rgba(0, 0, 0, 0.188235) 0px 10px 30px, rgba(0, 0, 0, 0.227451) 0 6px 10px;
+}
+.clear{
+  clear: both;
 }

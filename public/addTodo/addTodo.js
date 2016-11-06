@@ -2,6 +2,7 @@ import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import RaisedButton from 'material-ui/RaisedButton';
 import Form from '../form/form';
+import Snackbar from 'material-ui/Snackbar';
 
 import './addTodo.scss';
 
@@ -11,6 +12,7 @@ export default class AddTodo extends React.Component {
 
     this.state = {
       open: false,
+      openMessage: false,
     };
   }
 
@@ -18,8 +20,22 @@ export default class AddTodo extends React.Component {
     this.setState({open: true});
   };
 
-  handleClose = () => {
-    this.setState({open: false});
+  handleClose = message => {
+    this.setState({
+      open: false
+    }, () => { if (message === "message") this.handleTouchTap(); });
+  };
+
+  handleTouchTap = () => {
+    this.setState({
+      openMessage: true,
+    });
+  };
+
+  handleRequestClose = () => {
+    this.setState({
+      openMessage: false,
+    });
   };
 
   render() {
@@ -45,9 +61,16 @@ export default class AddTodo extends React.Component {
             close={this.handleClose}
             loading={this.props.loading}
             resetData={this.props.resetData}
+            nameButton="Добавить"
             url="/api/save/todo"
           />
         </Dialog>
+        <Snackbar
+          open={this.state.openMessage}
+          message="Задача успешно добавленна"
+          autoHideDuration={4000}
+          onRequestClose={this.handleRequestClose}
+        />
       </div>
     );
   }

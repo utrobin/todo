@@ -81,13 +81,13 @@ def get_tasks(request):
             Q(tags__title__in=all_tags(req['tags'])),
             Q(completed__in=show),
             Q(deleted=False)
-        ).order_by(sort).order_by('dedline_time').distinct().count() / 10)
+        ).order_by(sort).order_by('dedline_time').distinct().count() / 7)
 
         for todo in Todo.objects.filter(
             Q(tags__title__in=all_tags(req['tags'])),
             Q(completed__in=show),
             Q(deleted=False)
-        ).order_by('dedline_time').order_by(sort).distinct()[page * 10:(page + 1) * 10]:
+        ).order_by('dedline_time').order_by(sort).distinct()[page * 7:(page + 1) * 7]:
             tags = []
             for tag in todo.tags.all():
                 tags.append({
@@ -139,14 +139,36 @@ def edit_todo(request):
     if request.method == 'POST':
         req = json.loads(request.body.decode('utf-8'))
 
+        if req['date'] == "":
+            date = None
+        else:
+            date = req['date']
+
+        if req['time'] == "":
+            time = None
+        else:
+            time = req['time']
+
+        print(time, date)
+
         todo = Todo.objects.get(id=req['id'])
-        todo(
-            title=req['title'],
-            description=req['description'],
-            dedline_date=req['dedline_date'],
-            dedline_time=req['dedline_time'],
-        )
+        todo.title=req['title']
+        todo.description=req['description']
+
+        if time != None:
+            todo.dedline_time = time
+        if date != None:
+            todo.dedline_date = date
+
         todo.save()
+
+        for tag in req['tags']:
+            t = Tags.objects.all().filter(title=tag).first()
+            if not t:
+                t = Tags(title=tag)
+                t.save()
+            todo.tags.add(t)
+            todo.save()
 
         return HttpResponse()
 

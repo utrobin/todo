@@ -2,13 +2,32 @@ import React from 'react';
 import Task from '../task/task';
 import CircularProgress from 'material-ui/CircularProgress';
 import RaisedButton from 'material-ui/RaisedButton';
+import Snackbar from 'material-ui/Snackbar';
 
 import './tasks.scss';
 
 export default class Tasks extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      openMessage: false,
+      message: ""
+    }
   }
+
+  handleTouchTap = message => {
+    this.setState({
+      message: message,
+      openMessage: true,
+    });
+  };
+
+  handleRequestClose = () => {
+    this.setState({
+      openMessage: false,
+    });
+  };
 
   render() {
     if (this.props.error) {
@@ -29,14 +48,15 @@ export default class Tasks extends React.Component {
                   id={el.id}
                   title={el.title}
                   description={el.description}
-                  date={el.date}
-                  time={el.time}
+                  dedline_date={el.date}
+                  dedline_time={el.time}
                   completed={el.completed}
                   tags={el.tags}
                   deletedTodo={this.props.deletedTodo}
                   getTasks={this.props.getTasks}
                   loading={this.props.loadingF}
                   resetData={this.props.resetData}
+                  handleTouchTap={this.handleTouchTap}
                 />
               )
             })
@@ -55,6 +75,12 @@ export default class Tasks extends React.Component {
               />
             </div>
           </div>
+          <Snackbar
+            open={this.state.openMessage}
+            message={this.state.message}
+            autoHideDuration={4000}
+            onRequestClose={this.handleRequestClose}
+          />
         </div>
       );
     }
