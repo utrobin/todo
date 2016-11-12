@@ -7,6 +7,7 @@ import Form from '../form/form';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
+import FlatButton from 'material-ui/FlatButton';
 import Settings from 'material-ui/svg-icons/action/settings';
 
 import './task.scss';
@@ -30,6 +31,10 @@ export default class Task extends React.Component {
 
     this.state = {
       open: false,
+
+      title: "",
+      actions: undefined,
+      content: ""
     };
   }
 
@@ -66,22 +71,58 @@ export default class Task extends React.Component {
   }
 
   handleChangeSingle = (event, value) => {
+    const actions = [
+      <FlatButton
+        label="Закрыть"
+        primary={true}
+        onTouchTap={this.handleClose}
+      />,
+      <FlatButton
+        label="Удалить"
+        primary={true}
+        onTouchTap={this.onDelete}
+      />,
+    ];
+
+    console.log(value)
+
     switch(value) {
       case "1":
-        this.onDelete();
+        this.setState({
+          open: true,
+          title: undefined,
+          actions: actions,
+          content: "Вы точно хотите удалить эту задачу?"
+        });
+        break;
 
       case "2":
-        this.handleOpen();
+        this.setState({
+          open: true,
+          title: "Изменить задачу",
+          actions: undefined,
+          content: <Form
+            getTasks={this.props.getTasks}
+            close={this.handleClose}
+            loading={this.props.loading}
+            resetData={this.props.resetData}
+            url="/api/edit/todo"
+            title={this.props.title}
+            descreption={this.props.description}
+            tags={this.props.tags}
+            dedline_date={this.props.dedline_date}
+            dedline_time={this.props.dedline_time}
+            id={this.props.id}
+            nameButton="Изменить"
+          />
+        });
     }
-  };
-
-  handleOpen = () => {
-    this.setState({open: true});
   };
 
   handleClose = message => {
     this.setState({
       open: false,
+      openDelete: false
     });
     if (message === "message") {
       this.props.handleTouchTap("Задача успешно изменена");
@@ -114,25 +155,14 @@ export default class Task extends React.Component {
           <MenuItem value="2" primaryText="Изменить" />
         </IconMenu>
         <Dialog
-          title="Добавить задачу"
+          title={this.state.title}
           autoScrollBodyContent={true}
           modal={true}
           open={this.state.open}
+          onRequestClose={this.handleClose}
+          actions={this.state.actions}
         >
-          <Form
-            getTasks={this.props.getTasks}
-            close={this.handleClose}
-            loading={this.props.loading}
-            resetData={this.props.resetData}
-            url="/api/edit/todo"
-            title={this.props.title}
-            descreption={this.props.description}
-            tags={this.props.tags}
-            dedline_date={this.props.dedline_date}
-            dedline_time={this.props.dedline_time}
-            id={this.props.id}
-            nameButton="Изменить"
-          />
+          {this.state.content}
         </Dialog>
       </div>
     );
@@ -170,7 +200,7 @@ export default class Task extends React.Component {
         <p className="task__descreption">{this.props.description}</p>
         <div className="task__tags" style={styles.wrapper}>
           {
-            this.props.tags.map((el, i) => {
+            this.props.tags.map((el) => {
               return (
                 <Chip
                   key={el.id}
